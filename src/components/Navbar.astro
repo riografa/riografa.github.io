@@ -1,0 +1,60 @@
+---
+const navLinks = [
+    { name: "Inicio", href: "/" },
+    { name: "Colecciones", href: "/about" },
+    { name: "Reconocimientos", href: "/projects" },
+    { name: "Laboratorios", href: "/contact" },
+    { name: "Expo Individual", href: "/about" },
+    { name: "Expo Colectiva", href: "/projects" },
+    { name: "Publicaciones", href: "/publicaciones" },
+];
+---
+
+<nav class="fixed flex justify-between w-full h-auto px-4 py-2 z-10" aria-label="Main navigation">
+    <div class="flex justify-between w-dvw  items-center">
+       
+        <div class="text-lg font-bold">Riógrafa</div>
+        <ul class="hidden lg:flex w-auto gap-8 items-center">
+            {navLinks.map(link => (
+                <li>
+                    <a
+                        href={link.href}
+                        class="text-gray-800 font-semibold transition-colors hover:text-yellow-600 focus:ring-2 focus:ring-yellow-300 focus:text-yellow-600"
+                    >
+                        {link.name}
+                    </a>
+                </li>
+            ))}
+        </ul>
+        <div class="flex items-center gap-1">
+            <a href="#" class="flex text-sm font-sans font-semibold w-auto px-4 py-1 border-2 rounded-lg border-amber-700 bg-amber-500">Escríbeme</a>
+            <button
+                id="nav-toggle"
+                class="flex flex-col lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                aria-controls="nav-list"
+                aria-expanded="false"
+                aria-label="Abrir menú"
+                    onclick="document.getElementById('nav-list').classList.toggle('hidden'); const btn = document.getElementById('nav-toggle'); btn.setAttribute('aria-expanded', String(!JSON.parse(btn.getAttribute('aria-expanded') || 'false')));">
+                <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile menu (hidden by default) -->
+    <div id="nav-list" class="lg:hidden hidden px-4 pt-2 pb-4">
+        <ul class="flex flex-col gap-2">
+            {navLinks.map(link => (
+                <li>
+                    <a
+                        href={link.href}
+                        class="block text-gray-800 font-medium px-3 py-2 rounded-md hover:bg-amber-300 transition-colors focus:ring-2 focus:ring-yellow-300"
+                    >
+                        {link.name}
+                    </a>
+                </li>
+            ))}
+        </ul>
+    </div>
+</nav>
