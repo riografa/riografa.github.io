@@ -1,11 +1,8 @@
----
---- 
-
 <section class="relative w-screen h-[100dvh] flex flex-col justify-end items-center overflow-hidden">
   <div id="model-3d-container" class="absolute inset-0 w-full h-full z-0"></div>
 
-  <div class="relative z-10 flex flex-col w-3/5 gap-2 p-2 text-center pb-8 text-gray-800">
-    <h1 class="text-5xl font-bold ">
+  <div class="relative w-full z-10 flex flex-col gap-2 p-2 text-center pb-8 text-gray-800">
+    <h1 class="text-2xl lg:text-5xl font-bold">
       Luisa Fernanda Giraldo Murillo
     </h1>
     <p>
@@ -14,52 +11,33 @@
   </div>
 </section>
 
-<!-- Cliente: usar el loader modular procesado por Astro/Vite -->
 <script type="module">
   import { initGLBScene } from '/src/scripts/load-glb-model.js';
 
   (async () => {
     const container = document.getElementById('model-3d-container');
-    console.log('[Hero] container found:', !!container);
     if (!container) return;
 
     const rect = container.getBoundingClientRect();
-    console.log('[Hero] container size before init', rect.width, rect.height);
     if (rect.width === 0 || rect.height === 0) {
-      console.log('[Hero] Forzando altura mínima al contenedor 3D');
       container.style.minHeight = '320px';
     }
 
     try {
-      // Construir la URL relativa al <base> del documento para que funcione
-      // tanto en desarrollo (base='/') como en GitHub Pages (ej. '/riografa.github.io/')
-      const baseEl = document.querySelector('base');
-      // Preferir base.href (valor absoluto). Si no existe, intentar import.meta.env.BASE_URL
-      // y finalmente fallback a location.origin + '/'.
-      let absoluteBase = null;
-      if (baseEl && baseEl.href) {
-        absoluteBase = baseEl.href;
-      } else if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
-        try {
-          absoluteBase = new URL(import.meta.env.BASE_URL, location.href).href;
-        } catch (e) {
-          absoluteBase = location.origin + (import.meta.env.BASE_URL || '/');
-        }
-      } else {
-        absoluteBase = location.origin + '/';
-      }
-      // Asegurar que absoluteBase termina en '/'
-      if (!absoluteBase.endsWith('/')) absoluteBase += '/';
-      const modelUrl = new URL('models/mapa-colombia.glb', absoluteBase).href;
-      console.log('[Hero] Inicializando escena 3D con URL:', modelUrl, 'baseHref:', baseHref);
-      const scene = await initGLBScene(container, modelUrl);
+      // Usar import.meta.env.BASE_URL para obtener la base path
+      const base = import.meta.env.BASE_URL || '/';
+      const modelPath = `${base}models/mapa-colombia.glb`.replace(/\/+/g, '/');
+      
+      console.log('[Hero] Cargando modelo desde:', modelPath);
+      
+      const scene = await initGLBScene(container, modelPath);
       window.threeScene = scene;
-      console.log('[Hero] initGLBScene completado correctamente');
+      console.log('[Hero] Modelo 3D cargado correctamente');
     } catch (err) {
-      console.error('[Hero] initGLBScene error:', err);
+      console.error('[Hero] Error al cargar el modelo:', err);
       const errEl = document.createElement('div');
       errEl.style.cssText = 'position:absolute;left:8px;top:8px;background:#ffcdd2;color:#b71c1c;padding:8px;border-radius:6px;z-index:50;';
-      errEl.textContent = '3D error: ' + (err && err.message ? err.message : String(err));
+      errEl.textContent = 'Error 3D: ' + err.message;
       container.appendChild(errEl);
     }
   })();
