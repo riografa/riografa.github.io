@@ -31,8 +31,27 @@
     }
 
     try {
-      const modelUrl = '/models/mapa-colombia.glb';
-      console.log('[Hero] Inicializando escena 3D con URL:', modelUrl);
+      // Construir la URL relativa al <base> del documento para que funcione
+      // tanto en desarrollo (base='/') como en GitHub Pages (ej. '/riografa.github.io/')
+      const baseEl = document.querySelector('base');
+      // Preferir base.href (valor absoluto). Si no existe, intentar import.meta.env.BASE_URL
+      // y finalmente fallback a location.origin + '/'.
+      let absoluteBase = null;
+      if (baseEl && baseEl.href) {
+        absoluteBase = baseEl.href;
+      } else if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
+        try {
+          absoluteBase = new URL(import.meta.env.BASE_URL, location.href).href;
+        } catch (e) {
+          absoluteBase = location.origin + (import.meta.env.BASE_URL || '/');
+        }
+      } else {
+        absoluteBase = location.origin + '/';
+      }
+      // Asegurar que absoluteBase termina en '/'
+      if (!absoluteBase.endsWith('/')) absoluteBase += '/';
+      const modelUrl = new URL('models/mapa-colombia.glb', absoluteBase).href;
+      console.log('[Hero] Inicializando escena 3D con URL:', modelUrl, 'baseHref:', baseHref);
       const scene = await initGLBScene(container, modelUrl);
       window.threeScene = scene;
       console.log('[Hero] initGLBScene completado correctamente');
