@@ -1,19 +1,18 @@
 ---
 const navLinks = [
-    { name: "Inicio", href: "/" },
-    { name: "Colecciones", href: "/about" },
-    { name: "Reconocimientos", href: "/projects" },
-    { name: "Laboratorios", href: "/contact" },
-    { name: "Expo Individual", href: "/about" },
-    { name: "Expo Colectiva", href: "/projects" },
-    { name: "Publicaciones", href: "/publicaciones" },
+    
+    { name: "Colecciones", href: "/colecciones" },
+    { name: "Reconocimientos", href: "/reconocimientos" },
+    { name: "Laboratorios", href: "/laboratorios" },
+    { name: "Exposiciones", href: "/exposiciones" },
+    { name: "Escituras", href: "/escrituras" },
 ];
 ---
 
 <nav class="fixed flex justify-between w-full h-auto px-4 py-2 z-10" aria-label="Main navigation">
     <div class="flex justify-between w-dvw  items-center">
        
-        <div class="text-lg font-bold">Riógrafa</div>
+        <a class="text-lg font-bold" href="#">Riógrafa</a>
         <ul class="hidden lg:flex w-auto gap-8 items-center">
             {navLinks.map(link => (
                 <li>
