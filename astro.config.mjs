@@ -1,10 +1,8 @@
-// @ts-check
-import { defineConfig } from "astro/config";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: "https://riografa.github.io",
-  base: "/riografa.github.io",
-  build: { assets: "assets" },
+  site: 'https://riografa.github.io',
+  base: 'riografa.github.io',
   integrations: [tailwind()],
 });
