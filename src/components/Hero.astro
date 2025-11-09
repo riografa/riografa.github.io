@@ -34,36 +34,32 @@
     console.log('[Hero] Contenedor configurado para viewport completo');
 
     try {
-      // Detectar la base URL desde el navegador
-      function getCorrectBasePath() {
-        const hostname = window.location.hostname;
-        const pathname = window.location.pathname;
-        
-        console.log('[Hero] Hostname:', hostname, 'Pathname:', pathname);
-        
-        // En desarrollo local (localhost o 127.0.0.1)
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-          return '/';
-        }
-        
-        // En GitHub Pages
-        if (hostname.includes('github.io')) {
-          // Si es usuario.github.io/repo-name
-          const pathSegments = pathname.split('/').filter(Boolean);
-          if (pathSegments.length > 0) {
-            return `/${pathSegments[0]}/`;
-          }
-        }
-        
-        // Fallback para otros casos
-        return '/';
-      }
-      
-      const basePath = getCorrectBasePath();
-      const modelPath = `${basePath}models/mapa-colombia.glb`.replace(/\/+/g, '/');
-      
-      console.log('[Hero] Base path detectado:', basePath);
-      console.log('[Hero] Cargando modelo desde:', modelPath);
+     function getCorrectBasePath() {
+  const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+  
+  console.log('[Hero] Hostname:', hostname, 'Pathname:', pathname);
+  
+  // En desarrollo local (localhost o 127.0.0.1)
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return '';  // ← Cambio: retornar string vacío en local
+  }
+  
+  // En GitHub Pages para username.github.io (sin subdirectorio)
+  if (hostname === 'riografia.github.io' && pathname === '/') {
+    return '';  // ← Cambio: usuario.github.io no necesita base path
+  }
+  
+  // Fallback para otros casos
+  return '';
+}
+
+const basePath = getCorrectBasePath();
+const modelPath = `${basePath}/models/mapa-colombia.glb`.replace(/\/+/g, '/');
+
+console.log('[Hero] Base path detectado:', basePath);
+console.log('[Hero] Ruta final del modelo:', modelPath);
+
       
       const scene = await initGLBScene(container, modelPath);
       window.threeScene = scene;
