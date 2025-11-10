@@ -2,8 +2,14 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: 'https://riografa.github.io',
-  base: process.env.NODE_ENV === 'production' ? '/luisagiraldoportfolio/' : '/', 
+  site: 'https://riografa.github.io/luisagiraldoportfolio',
+  base: '/luisagiraldoportfolio/',
   integrations: [tailwind()],
-  output: 'static',
+  vite: {
+    resolve: {
+      alias: {
+        '@scripts': '/src/scripts'
+      }
+    }
+  }
 });
