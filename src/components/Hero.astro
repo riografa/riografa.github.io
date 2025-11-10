@@ -1,5 +1,5 @@
 ---
-/* Hero.astro */
+import { initGLBScene } from '../scripts/load-glb-model.js';
 ---
 
 <section class="relative w-screen h-screen flex flex-col justify-end items-center overflow-hidden">
@@ -16,70 +16,42 @@
 </section>
 
 <script type="module">
-  
-  const { initGLBScene } = await import(
-    new URL('/src/scripts/load-glb-model.js', import.meta.env.BASE_URL).href
-  );
+  import { initGLBScene } from '/src/scripts/load-glb-model.js';
 
   (async () => {
     const container = document.getElementById('model-3d-container');
-    if (!container) {
-      console.error('[Hero] ❌ No se encontró el contenedor');
-      return;
-    }
+    if (!container) return console.error('[Hero] No se encontró el contenedor');
 
-    // Ajusta tamaño del contenedor para el modelo
     container.style.width = '100vw';
     container.style.height = '100vh';
 
     try {
-      // ✅ Ruta dinámica que respeta el base del sitio (importante para GitHub Pages)
-      const modelPath = new URL('/models/mapa-colombia.glb', import.meta.env.BASE_URL).href;
+      const base = window.location.hostname === 'localhost'
+        ? '/'
+        : '/luisagiraldoportfolio/';
+      const modelPath = `${base}models/mapa-colombia.glb`;
+      console.log('[Hero] Cargando modelo desde:', modelPath);
+
       const scene = await initGLBScene(container, modelPath);
       window.threeScene = scene;
     } catch (err) {
       console.error('[Hero] ❌ Error al inicializar escena 3D:', err);
-
-      const errorEl = document.createElement('div');
-      errorEl.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(255, 0, 0, 0.95);
-        color: white;
-        padding: 25px;
-        border-radius: 10px;
-        text-align: left;
-        z-index: 100;
-        max-width: 90%;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        line-height: 1.4;
-        border: 2px solid #ff6b6b;
-      `;
-      errorEl.innerHTML = `
-        <h3 style="margin: 0 0 15px 0; color: #ffcccb;">❌ Error cargando modelo 3D</h3>
-        <p><strong>Error:</strong> ${err.message}</p>
-        <hr style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.3);">
-        <p><strong>Verifica que el archivo exista en:</strong><br><code>/public/models/mapa-colombia.glb</code></p>
-        <hr style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.3);">
-        <p><strong>✅ Checklist:</strong></p>
-        <ol style="margin: 10px 0; padding-left: 20px;">
-          <li>Archivo existe en <code>/public/models/mapa-colombia.glb</code></li>
-          <li>Archivo no está corrupto</li>
-          <li>Deploy exitoso en GitHub Pages</li>
-        </ol>
-      `;
-      container.appendChild(errorEl);
+      const msg = document.createElement('div');
+      msg.textContent = `Error: ${err.message}`;
+      msg.style.position = 'absolute';
+      msg.style.top = '50%';
+      msg.style.left = '50%';
+      msg.style.transform = 'translate(-50%, -50%)';
+      msg.style.color = 'white';
+      msg.style.background = 'red';
+      msg.style.padding = '1rem';
+      container.appendChild(msg);
     }
   })();
 
-  // Limpieza opcional de la escena Three.js al salir
   window.addEventListener('beforeunload', () => {
     const scene = window.threeScene;
-    if (scene && scene.dispose) {
-      scene.dispose();
-    }
+    if (scene?.dispose) scene.dispose();
   });
 </script>
+
