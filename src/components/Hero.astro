@@ -16,18 +16,19 @@
 </section>
 
 <script type="module">
+  // ✅ RUTA RELATIVA - CRÍTICO
   import { initGLBScene } from '../scripts/load-glb-model.js';
 
   (async () => {
     const container = document.getElementById('model-3d-container');
-    console.log('[Hero] 🎯 Container encontrado:', !!container);
     
     if (!container) {
-      console.error('[Hero] ❌ No se encontró el contenedor');
+      console.error('[Hero] ❌ Contenedor no encontrado');
       return;
     }
 
-    // Configurar contenedor
+    console.log('[Hero] ✅ Contenedor encontrado');
+
     container.style.position = 'fixed';
     container.style.top = '0';
     container.style.left = '0';
@@ -35,99 +36,20 @@
     container.style.height = '100vh';
     container.style.zIndex = '0';
 
-    console.log('[Hero] ✅ Contenedor configurado');
-
     try {
-      // ✅ CRÍTICO: Usar import.meta.env.BASE_URL
-      const BASE_URL = import.meta.env.BASE_URL;
+      const modelPath = '/models/mapa-colombia.glb';
       
-      // Construir la ruta correcta del modelo
-      // Asegurar que no haya dobles barras
-      const modelPath = `${BASE_URL}models/mapa-colombia.glb`.replace(/([^:]\/)\/+/g, "$1");
+      console.log('[Hero] 🚀 Cargando modelo');
+      console.log('[Hero] 📍 Ruta:', modelPath);
+      console.log('[Hero] 🌐 URL:', window.location.origin + modelPath);
       
-      console.log('[Hero] 🔧 Configuración:');
-      console.log('[Hero]   - BASE_URL:', BASE_URL);
-      console.log('[Hero]   - Model path:', modelPath);
-      console.log('[Hero]   - Full URL:', window.location.origin + modelPath);
-      console.log('[Hero]   - Hostname:', window.location.hostname);
-      console.log('[Hero]   - Pathname:', window.location.pathname);
-      
-      // Verificar que el archivo existe antes de cargarlo
-      console.log('[Hero] 🔍 Verificando archivo GLB...');
-      const checkResponse = await fetch(modelPath, { method: 'HEAD' });
-      
-      if (!checkResponse.ok) {
-        throw new Error(`Archivo no encontrado: ${modelPath} (HTTP ${checkResponse.status})`);
-      }
-      
-      console.log('[Hero] ✅ Archivo GLB verificado');
-      console.log('[Hero]   - Status:', checkResponse.status);
-      console.log('[Hero]   - Content-Type:', checkResponse.headers.get('content-type'));
-      console.log('[Hero]   - Content-Length:', checkResponse.headers.get('content-length'), 'bytes');
-      
-      // Cargar la escena 3D
-      console.log('[Hero] 🚀 Iniciando carga de escena 3D...');
       const scene = await initGLBScene(container, modelPath);
-      
-      // Guardar referencia global para debugging
       window.threeScene = scene;
       
-      console.log('[Hero] ✅✅✅ Escena 3D inicializada correctamente');
-      console.log('[Hero] 🎬 Animaciones activas:', scene.animations?.length || 0);
-      
-      // Mostrar indicador de éxito
-      setTimeout(() => {
-        const statusInfo = document.createElement('div');
-        statusInfo.style.cssText = `
-          position: fixed;
-          top: 20px;
-          left: 20px;
-          background: rgba(0, 200, 0, 0.95);
-          color: white;
-          padding: 20px;
-          border-radius: 10px;
-          font-family: monospace;
-          font-size: 13px;
-          z-index: 50;
-          max-width: 350px;
-          line-height: 1.5;
-          border-left: 4px solid #00ff00;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        `;
-        
-        statusInfo.innerHTML = `
-          <strong style="font-size: 16px;">✅ Modelo 3D Cargado</strong><br><br>
-          <strong>Entorno:</strong> ${BASE_URL === '/' ? 'Desarrollo' : 'Producción'}<br>
-          <strong>Escala:</strong> 20x<br>
-          <strong>Animaciones:</strong> ${scene.animations?.length || 0}<br>
-          <strong>Controles:</strong><br>
-          • Click izq + arrastrar: Rotar<br>
-          • Rueda del ratón: Zoom<br>
-          • Click der + arrastrar: Pan<br>
-          <hr style="border: 1px solid rgba(255,255,255,0.3); margin: 10px 0;">
-          <small>Ruta: ${modelPath}</small>
-        `;
-        container.appendChild(statusInfo);
-        
-        // Desvanecer después de 10 segundos
-        setTimeout(() => {
-          statusInfo.style.transition = 'opacity 2s';
-          statusInfo.style.opacity = '0';
-          setTimeout(() => {
-            if (container.contains(statusInfo)) {
-              container.removeChild(statusInfo);
-            }
-          }, 2000);
-        }, 10000);
-      }, 1000);
+      console.log('[Hero] ✅✅✅ MODELO CARGADO');
       
     } catch (err) {
-      console.error('[Hero] ❌❌❌ Error al inicializar escena 3D');
-      console.error('[Hero] Error:', err);
-      console.error('[Hero] Stack:', err.stack);
-      
-      const BASE_URL = import.meta.env.BASE_URL;
-      const expectedPath = `${window.location.origin}${BASE_URL}models/mapa-colombia.glb`.replace(/([^:]\/)\/+/g, "$1");
+      console.error('[Hero] ❌ Error:', err.message);
       
       const errorEl = document.createElement('div');
       errorEl.style.cssText = `
@@ -139,39 +61,16 @@
         color: white;
         padding: 30px;
         border-radius: 12px;
-        text-align: left;
         z-index: 100;
-        max-width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        line-height: 1.6;
+        max-width: 600px;
+        font-family: monospace;
         border: 3px solid #ff6b6b;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.5);
       `;
       
       errorEl.innerHTML = `
-        <h3 style="margin: 0 0 20px 0; color: #ffcccb; font-size: 20px;">❌ Error Cargando Modelo 3D</h3>
+        <h3>❌ Error Cargando Modelo 3D</h3>
         <p><strong>Error:</strong> ${err.message}</p>
-        <hr style="margin: 20px 0; border: 1px solid rgba(255,255,255,0.3);">
-        <p><strong>📂 Buscando modelo en:</strong><br>
-        <code style="background: rgba(0,0,0,0.3); padding: 5px; border-radius: 3px; display: block; margin-top: 5px; word-break: break-all;">${expectedPath}</code></p>
-        <hr style="margin: 20px 0; border: 1px solid rgba(255,255,255,0.3);">
-        <p><strong>🔍 Verificaciones necesarias:</strong></p>
-        <ol style="margin: 10px 0; padding-left: 25px; line-height: 2;">
-          <li>Archivo existe en: <code>/public/models/mapa-colombia.glb</code></li>
-          <li>Archivo no está corrupto</li>
-          <li>Ejecutaste <code>npm run build</code></li>
-          <li>Archivo <code>.nojekyll</code> existe en <code>/public/</code></li>
-          <li>GitHub Actions completó exitosamente</li>
-        </ol>
-        <hr style="margin: 20px 0; border: 1px solid rgba(255,255,255,0.3);">
-        <p><strong>⚙️ Configuración actual:</strong><br>
-        • BASE_URL: <code>${BASE_URL}</code><br>
-        • Hostname: <code>${window.location.hostname}</code><br>
-        • Pathname: <code>${window.location.pathname}</code><br>
-        • Entorno: <strong>${BASE_URL === '/' ? 'DESARROLLO' : 'PRODUCCIÓN'}</strong></p>
+        <p><strong>URL:</strong> ${window.location.origin}/models/mapa-colombia.glb</p>
         <button onclick="this.parentElement.remove()" style="
           margin-top: 20px;
           padding: 12px 24px;
@@ -180,19 +79,15 @@
           border-radius: 6px;
           color: white;
           cursor: pointer;
-          font-weight: bold;
-          font-size: 14px;
         ">Cerrar</button>
       `;
       container.appendChild(errorEl);
     }
   })();
 
-  // Limpieza al salir
   window.addEventListener('beforeunload', () => {
-    const scene = window.threeScene;
-    if (scene && scene.dispose) {
-      scene.dispose();
+    if (window.threeScene?.dispose) {
+      window.threeScene.dispose();
     }
   });
 </script>
