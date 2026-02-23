@@ -73,7 +73,7 @@
 
     // Escala base
     const maxDim = Math.max(size.x, size.y, size.z);
-    model.scale.setScalar(1.3); // Reset scale to 1 for sphere calculation
+    model.scale.setScalar(1); // Reset scale to 1 for sphere calculation
 
     // Calcular distancia de cámara para que quepa todo el modelo (Fit to Viewport)
     const fov = camera.fov * (Math.PI / 180);
