@@ -1,11 +1,11 @@
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import tailwindv4 from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://riografa.github.io',
-  base: '/',
-  integrations: [tailwind()],
+  base: '/luisagiraldoportfolio/',
   vite: {
+    plugins: [tailwindv4()],
     resolve: {
       alias: {
         '@scripts': '/src/scripts'

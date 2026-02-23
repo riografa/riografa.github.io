@@ -1,6 +1,5 @@
 ---
 const navLinks = [
-    
     { name: "Colecciones", href: "/colecciones" },
     { name: "Reconocimientos", href: "/reconocimientos" },
     { name: "Laboratorios", href: "/laboratorios" },
@@ -9,53 +8,145 @@ const navLinks = [
 ];
 ---
 
-
-<nav id="navbar" class="fixed flex justify-between w-full h-auto px-4 py-2 z-10" aria-label="Main navigation">
-    <div class="flex justify-between w-dvw  items-center">
-       
-        <a class="text-lg font-bold" href="#">Riógrafa</a>
-        <ul class="hidden lg:flex w-auto gap-8 items-center">
-            {navLinks.map(link => (
-                <li>
-                    <a
-                        href={link.href}
-                        class="text-gray-800 font-semibold transition-colors hover:text-yellow-600 focus:ring-2 focus:ring-yellow-300 focus:text-yellow-600"
-                    >
-                        {link.name}
-                    </a>
-                </li>
-            ))}
+<nav
+    id="navbar"
+    class="absolute justify-between w-auto lg:inset-8 h-auto left-2 right-2 top-2 z-10"
+    aria-label="Main navigation"
+>
+    <div
+        class="lg:flex-col flex gap-6 justify-between w-full h-auto items-start"
+    >
+        <a
+            class="text-xl font-black tracking-tighter text-slate-900 group"
+            href="#"
+        >
+            RIÓ<span
+                class="text-[#05358f] group-hover:text-amber-600 transition-colors"
+                >GRAFA</span
+            >
+        </a>
+        <ul
+            class="hidden lg:flex-col lg:flex w-full lg:w-auto gap-10 lg:gap-2 items-start"
+        >
+            {
+                navLinks.map((link) => (
+                    <li>
+                        <a
+                            href={link.href}
+                            class="text-slate-900 font-semibold text-left align-left  tracking-tight transition-all hover:text-amber-600 focus:ring-2 focus:ring-amber-300 focus:text-amber-600"
+                        >
+                            {link.name}
+                        </a>
+                    </li>
+                ))
+            }
         </ul>
-    
-        <div class="flex items-center gap-1">
-            <a href="#" class="flex text-sm font-sans font-semibold w-auto px-4 py-1 border-2 rounded-lg border-amber-200 bg-amber-500">Escríbeme</a>
+
+        <div class="flex items-center gap-4  w-auto h-auto">
+            <a
+                href="#"
+                class="hidden lg:flex text-[#05358f] font-semibold text-left align-left  tracking-tight transition-all hover:text-amber-600 focus:ring-2 focus:ring-amber-300 focus:text-amber-600"
+            >
+                Escríbeme...
+            </a>
             <button
                 id="nav-toggle"
-                class="flex flex-col lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                class="flex flex-col lg:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors focus:ring-2 focus:ring-amber-300"
                 aria-controls="nav-list"
                 aria-expanded="false"
                 aria-label="Abrir menú"
-                    onclick="document.getElementById('nav-list').classList.toggle('hidden'); const btn = document.getElementById('nav-toggle'); btn.setAttribute('aria-expanded', String(!JSON.parse(btn.getAttribute('aria-expanded') || 'false')));">
-                <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            >
+                <svg
+                    class="w-6 h-6 text-slate-900"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        id="nav-icon-path"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
         </div>
     </div>
 
-    <!-- Mobile menu (hidden by default) -->
-    <div id="nav-list" class="lg:hidden hidden px-4 pt-2 pb-4">
-        <ul class="flex flex-col gap-2">
-            {navLinks.map(link => (
-                <li>
-                    <a
-                        href={link.href}
-                        class="block text-gray-800 font-medium px-3 py-2 rounded-md hover:bg-amber-300 transition-colors focus:ring-2 focus:ring-yellow-300"
-                    >
-                        {link.name}
-                    </a>
-                </li>
-            ))}
+    <!-- Mobile menu (absolute positioning to avoid moving header elements) -->
+    <div
+        id="nav-list"
+        class="lg:hidden hidden absolute top-16  w-full  h-auto backdrop-blur-xl overflow-hidden pb-4"
+    >
+        <ul class="flex flex-col gap-3 h-auto pb-4 pt-4">
+            {
+                navLinks.map((link, index) => (
+                    <li class="nav-item opacity-0 transform translate-x-4">
+                        <a
+                            href={link.href}
+                            class="block text-2xl font-bold text-slate-900 px-4 py-6 h-auto rounded-2xl hover:bg-amber-500 hover:text-white transition-all duration-300"
+                        >
+                            {link.name}
+                        </a>
+                    </li>
+                ))
+            }
         </ul>
     </div>
 </nav>
+
+<script>
+    import { gsap } from "https://esm.sh/gsap";
+
+    const toggle = document.getElementById("nav-toggle");
+    const menu = document.getElementById("nav-list");
+    const items = document.querySelectorAll(".nav-item");
+    let isOpen = false;
+
+    if (toggle && menu) {
+        toggle.addEventListener("click", () => {
+            isOpen = !isOpen;
+            toggle.setAttribute("aria-expanded", isOpen.toString());
+
+            if (isOpen) {
+                // Open animation
+                menu.classList.remove("hidden");
+                gsap.fromTo(
+                    menu,
+                    { height: 0, opacity: 0 },
+                    {
+                        height: "auto",
+                        opacity: 1,
+                        duration: 0.6,
+                        ease: "expo.out",
+                    },
+                );
+                gsap.to(items, {
+                    x: 0,
+                    opacity: 1,
+                    duration: 0.4,
+                    stagger: 0.1,
+                    ease: "back.out(1.7)",
+                    delay: 0.2,
+                });
+            } else {
+                // Close animation
+                gsap.to(items, {
+                    x: 20,
+                    opacity: 0,
+                    duration: 0.3,
+                    stagger: 0.05,
+                    ease: "power2.in",
+                });
+                gsap.to(menu, {
+                    height: 0,
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: "expo.inOut",
+                    onComplete: () => menu.classList.add("hidden"),
+                });
+            }
+        });
+    }
+</script>
