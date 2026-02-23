@@ -3,7 +3,7 @@ import tailwindv4 from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://riografa.github.io',
-  base: '/luisagiraldoportfolio/',
+  base: '/',
   vite: {
     plugins: [tailwindv4()],
     resolve: {
