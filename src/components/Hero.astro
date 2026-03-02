@@ -192,7 +192,9 @@ const steps = [
   import { OrbitControls } from "https://esm.sh/three@0.183.0/examples/jsm/controls/OrbitControls.js";
   import { gsap } from "https://esm.sh/gsap";
   import { ScrollTrigger } from "https://esm.sh/gsap/ScrollTrigger";
-  gsap.registerPlugin(ScrollTrigger);
+  import { ScrollToPlugin } from "https://esm.sh/gsap/ScrollToPlugin";
+
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
   const BASE =
     (document.querySelector("base")?.getAttribute("href") || "/").replace(
