@@ -1,0 +1,80 @@
+---
+// RegionSection.astro — reusable region info panel
+interface Props {
+    id: string;
+    title: string;
+    subtitle?: string;
+    description: string;
+    link: string;
+    side: "left" | "right";
+    gutter?: string;
+}
+const {
+    id,
+    title,
+    subtitle,
+    description,
+    link,
+    side,
+    gutter = "16px",
+} = Astro.props;
+const isRight = side === "right";
+
+// Inline position: apply gutter from the bottom, and from the left/right edges.
+// On mobile, text is centered and spans the screen so we keep left/right padding.
+// On desktop, it aligns left/right strictly by the gutter distance.
+// Strong multi-layered text-shadow (white/cream halo) for maximum contrast against map.
+const textShadow =
+    "text-shadow: 0 0 10px rgba(248,247,245,0.95), 0 0 20px rgba(248,247,245,0.85), 0 0 30px rgba(248,247,245,0.6);";
+---
+
+<div
+    id={id}
+    class={`fixed w-full lg:w-auto z-20 flex gap-24flex-col ${isRight ? "items-center lg:items-end" : "items-center lg:items-start"} pointer-events-none opacity-0`}
+    style={`transform:translateY(20px); bottom:${gutter}; ${isRight ? `right:${gutter};` : `left:${gutter};`} padding-left:${gutter}; padding-right:${gutter}; lg:padding-left:0; lg:padding-right:0;`}
+>
+    <div
+        class={`pointer-events-auto text-center ${isRight ? "lg:text-right" : "lg:text-left"}`}
+        style={`max-width:420px;`}
+    >
+        <h2
+            class="text-3xl lg:text-5xl font-extrabold text-slate-900 mb-2 tracking-tighter leading-tight"
+            style={textShadow}
+        >
+            {title}
+            {
+                subtitle && (
+                    <>
+                        <br />
+                        <span
+                            class="text-lg lg:text-xl font-bold text-amber-600"
+                            style={textShadow}
+                        >
+                            {subtitle}
+                        </span>
+                    </>
+                )
+            }
+        </h2>
+        <p
+            class="text-base lg:text-lg text-slate-900 font-semibold mb-5 leading-relaxed"
+            style={textShadow}
+        >
+            {description}
+        </p>
+        <a
+            href={link}
+            class="region-link inline-block text-xs lg:text-sm font-bold text-slate-900 border-b-2 border-slate-900 pb-0.5 uppercase tracking-widest transition-colors duration-200"
+            style={textShadow}
+        >
+            Ver el proyecto →
+        </a>
+    </div>
+</div>
+
+<style>
+    .region-link:hover {
+        color: #f97316 !important;
+        border-color: #f97316 !important;
+    }
+</style>

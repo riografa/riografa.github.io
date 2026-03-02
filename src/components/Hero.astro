@@ -1,187 +1,886 @@
 ---
 // Hero.astro
+import RegionSection from "./RegionSection.astro";
+
+const GUTTER = "32px";
+
+const regions = [
+  {
+    id: "norte-info",
+    title: "Norte de Santander",
+    description:
+      "Tierra mojada / Frontera porosa — el cuerpo cruza la línea donde el agua no pide permiso. Entre caminos secos, el río se hace memoria vibrante. Un gesto liminal que abraza la cuenca, borrando divisiones a fuerza de humedad.",
+    link: "/proyectos/norte-de-santander",
+    side: "left" as const,
+  },
+  {
+    id: "santander-info",
+    title: "Santander",
+    description:
+      "Cañón / Vértigo — la coreografía del abismo. El cuerpo imita la erosión silenciosa del río Chicamocha. Cuerdas, piel y piedras rojas componen una danza de caída y resistencia ante la majestuosidad de la grieta.",
+    link: "/proyectos/santander",
+    side: "right" as const,
+  },
+  {
+    id: "boyaca-info",
+    title: "Boyacá",
+    description:
+      "Laguna fría / Ofrenda — el páramo respira niebla. Un ritual de pasos lentos sobre musgo ancestral, invocando el origen del agua pura. El cuerpo se hace vasija que contiene el silencio de las cumbres gélidas.",
+    link: "/proyectos/boyaca",
+    side: "left" as const,
+  },
+  {
+    id: "cundinamarca-info",
+    title: "Cundinamarca",
+    description:
+      "Lluvia asfáltica / Cuenca saturada — la ciudad que tapó sus ríos. Movimientos urbanos quebrados que buscan desagües y alcantarillas. Una performance sobre la inundación, el recuerdo hídrico bajo el puente y la resistencia civil.",
+    link: "/proyectos/cundinamarca-bogota",
+    side: "right" as const,
+  },
+  {
+    id: "caldas-info",
+    title: "Caldas",
+    description:
+      "Niebla volcánica / Cordillera termal — el agua hierve y la tierra ruge. Danzas que sudan el magma oculto. El cuerpo serpentea como el humo del volcán, conectando la nieve perpetua con la roca candente.",
+    link: "/proyectos/caldas",
+    side: "left" as const,
+  },
+  {
+    id: "tolima-info",
+    title: "Tolima",
+    description:
+      "Desierto / Inundación — entre el nevado y la sequedad del Magdalena. El cuerpo habita la tensión entre la sed y el diluvio, componiendo gestos que honran el agua que escasea y el agua que desborda.",
+    link: "/proyectos/tolima",
+    side: "right" as const,
+  },
+  {
+    id: "quindio-info",
+    title: "Quindío",
+    description:
+      "Primitiva afluencia — el cuerpo como afluente verde. En los surcos del eje cafetero, el agua subterránea nutre y habla. Una geocoreografía de raíces, tierra húmeda y bifurcaciones.",
+    link: "/proyectos/quindio",
+    side: "left" as const,
+  },
+  {
+    id: "huila-info",
+    title: "Huila",
+    description:
+      "Estrecho / Resonancia rocosa — la fuerza comprimida del río madre. Movimientos de contención y estallido, imitando la furia del agua al pasar por la piedra. Un canto profundo al nacimiento caudaloso.",
+    link: "/proyectos/huila",
+    side: "right" as const,
+  },
+  {
+    id: "valle-info",
+    title: "Valle del Cauca",
+    description:
+      "Pacífico / Sal y Manglar — donde el río abraza el mar. La cadencia cambia, el cuerpo se vuelve ola pesada, marea turbia y raíz de mangle. Una celebración rítmica de la desembocadura, la resistencia afro y el fluir definitivo.",
+    link: "/proyectos/valle-del-cauca",
+    side: "left" as const,
+  },
+];
+
+const steps = [
+  "Norte de Santander",
+  "Santander",
+  "Boyacá",
+  "Cundinamarca · Bogotá",
+  "Caldas",
+  "Tolima",
+  "Quindío",
+  "Huila",
+  "Valle del Cauca",
+];
 ---
 
-<section
-  class="relative w-screen h-100dvh flex flex-col justify-end items-center lg:items-end overflow-hidden bg-gradient-to-r from-[#aeaeb8] via-[#e9dac3] to-[#e5d9dd]"
->
-  <div id="model-3d-container" class="absolute inset-0 w-full h-full z-0"></div>
+<section id="hero-section" class="relative w-full h-[1100vh] bg-transparent">
+  <div class="sticky top-0 w-screen h-100dvh overflow-hidden bg-[#f8f7f5]">
+    <canvas
+      id="particles-canvas"
+      class="absolute inset-0 z-0 pointer-events-none"></canvas>
+    <div id="model-3d-container" class="absolute inset-0 z-10 w-full h-full">
+    </div>
 
-  <div
-    class=" absolute w-auto  h-auto left-2 right-2 bottom-2 lg:bottom-8 lg:right-8 z-10 flex flex-col items-center lg:items-end gap-2 p-6 lg:px-20 text-center lg:text-right rounded-2xl"
-  >
-    <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-      Luisa Fernanda Giraldo Murillo
-    </h1>
-    <p class="text-md text-slate-700 font-medium w-full lg:w-lg">
-      Magíster Interdisciplinar en Teatro y Artes Vivas y 
-      estudiante de Doctorado en Arte y Arquitectura - UNAL
-    </p>
+    <!-- Step Navigation Indicator -->
+    <nav
+      id="step-nav"
+      class="fixed z-30 flex flex-col items-center gap-2 pointer-events-none"
+      style={`top:${GUTTER};right:${GUTTER};`}
+      aria-label="Progreso de regiones"
+    >
+      {
+        steps.map((label, i) => {
+          const step = i + 1;
+          return (
+            <button
+              class="step-dot-btn flex items-center gap-2 pointer-events-auto"
+              data-step={step}
+              aria-label={`Ir a ${label}`}
+              style="background:none;border:none;padding:0;cursor:none;"
+            >
+              <span
+                class="step-label"
+                style="font-size:8px;font-weight:600;letter-spacing:0.06em;color:#f97316;white-space:nowrap;opacity:0;transition:opacity 0.2s ease;position:absolute;right:20px;pointer-events:none;"
+              >
+                {label}
+              </span>
+              <div style="position:relative;width:14px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span
+                  class="step-dot"
+                  data-step={step}
+                  style="display:block;width:6px;height:6px;border-radius:50%;background:#05358f;opacity:0.4;transition:all 0.3s ease;flex-shrink:0;position:absolute;"
+                />
+                <img
+                  class="step-flower"
+                  data-step={step}
+                  src={import.meta.env.BASE_URL + "images/calendula.png"}
+                  alt="caléndula"
+                  style="position:absolute;width:14px;height:14px;opacity:0;transform:scale(0);object-fit:contain;pointer-events:none;"
+                />
+              </div>
+            </button>
+          );
+        })
+      }
+    </nav>
+
+    <!-- Primary Info (Intro & Outro) -->
+    <div
+      id="primary-info"
+      class="fixed w-auto h-auto z-20 flex flex-col items-center lg:items-end gap-2 text-center lg:text-right py-4"
+      style={`right:${GUTTER};bottom:${GUTTER};padding-left:${GUTTER};padding-right:0;text-shadow: 0 0 10px rgba(248,247,245,0.9), 0 0 20px rgba(248,247,245,0.7);`}
+    >
+      <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+        Luisa Fernanda Giraldo Murillo
+      </h1>
+      <p
+        class="text-sm text-slate-800 font-semibold w-full lg:w-[480px] leading-relaxed"
+      >
+        Riógrafa. Geocoreografías para las aguas.<br />
+        Magíster en Teatro y Artes Vivas · Doctoranda en Arte y Arquitectura — UNAL
+      </p>
+    </div>
+
+    <!-- Footer for Final View -->
+    <div
+      id="hero-footer"
+      class="fixed w-full bottom-0 left-0 z-20 flex flex-col items-center justify-center py-6 pointer-events-none opacity-0"
+    >
+      <p
+        class="text-xs text-slate-600 font-semibold uppercase tracking-widest text-shadow-sm"
+      >
+        Diseñado y desarrollado por <a
+          href="https://keishmer00.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-slate-800 border-b border-slate-400 hover:text-amber-500 hover:border-amber-500 transition-colors pointer-events-auto"
+          >Keishmer Pérez</a
+        >
+      </p>
+      <p class="text-[10px] text-slate-500 mt-1">
+        © {new Date().getFullYear()} 2026 - Todos los derechos reservados.
+      </p>
+    </div>
+
+    <!-- Region Sections -->
+    {regions.map((r) => <RegionSection {...r} gutter={GUTTER} />)}
   </div>
 </section>
 
 <script>
-  // Use CDN imports to bypass local bundling issues with bare specifiers and base paths
   import * as THREE from "https://esm.sh/three@0.183.0";
   import { GLTFLoader } from "https://esm.sh/three@0.183.0/examples/jsm/loaders/GLTFLoader.js";
   import { OrbitControls } from "https://esm.sh/three@0.183.0/examples/jsm/controls/OrbitControls.js";
+  import { gsap } from "https://esm.sh/gsap";
+  import { ScrollTrigger } from "https://esm.sh/gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
 
-  async function initInline(container, modelUrl) {
+  const BASE =
+    (document.querySelector("base")?.getAttribute("href") || "/").replace(
+      /\/$/,
+      "",
+    ) + "/";
+  const GUTTER = "32px";
+
+  // ─── PARTICLES SYSTEM ──────────────────────────────────────────────────────
+  function initParticles() {
+    const canvas = document.getElementById(
+      "particles-canvas",
+    ) as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const img = new Image();
+    img.src = import.meta.env.BASE_URL + "images/calendula.png";
+    let imgLoaded = false;
+    img.onload = () => {
+      imgLoaded = true;
+    };
+
+    const particles: any[] = [];
+    const count = 146; // 30% more
+    const maxZ = 1500;
+
+    class Particle {
+      x = (Math.random() - 0.5) * width * 3;
+      y = (Math.random() - 0.5) * height * 3;
+      z = Math.random() * maxZ;
+      vx = (Math.random() - 0.5) * 0.4;
+      vy = (Math.random() - 0.5) * 0.4;
+      vz = (Math.random() - 0.5) * 2;
+      rot = Math.random() * Math.PI * 2;
+      vRot = (Math.random() - 0.5) * 0.02;
+      sizeBase = Math.random() * 10 + 5; // 30% smaller (5-15px)
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.z += this.vz;
+        this.rot += this.vRot;
+
+        if (this.z < 1) this.z = maxZ;
+        if (this.z > maxZ) this.z = 1;
+
+        if (this.x < -width * 1.5) this.x = width * 1.5;
+        if (this.x > width * 1.5) this.x = -width * 1.5;
+        if (this.y < -height * 1.5) this.y = height * 1.5;
+        if (this.y > height * 1.5) this.y = -height * 1.5;
+      }
+
+      draw() {
+        if (!imgLoaded) return;
+        const scale = 800 / this.z;
+        const px = this.x * scale + width / 2;
+        const py = this.y * scale + height / 2;
+        const s = this.sizeBase * scale;
+
+        if (px < -100 || px > width + 100 || py < -100 || py > height + 100)
+          return;
+
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(this.rot);
+        ctx.globalAlpha = Math.min(1, Math.max(0, 1 - this.z / maxZ)) * 0.8;
+        ctx.drawImage(img, -s / 2, -s / 2, s, s);
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < count; i++) particles.push(new Particle());
+
+    // Event listeners
+    window.addEventListener("resize", () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    let isPointerDown = false;
+    let pointerPos = { x: 0, y: 0 };
+    window.addEventListener("pointerdown", (e) => {
+      isPointerDown = true;
+      pointerPos.x = e.clientX;
+      pointerPos.y = e.clientY;
+    });
+    window.addEventListener("pointerup", () => {
+      isPointerDown = false;
+    });
+    window.addEventListener("pointermove", (e) => {
+      if (isPointerDown) {
+        pointerPos.x = e.clientX;
+        pointerPos.y = e.clientY;
+      }
+    });
+
+    function spawnParticleAt(x: number, y: number) {
+      const p = new Particle();
+      p.x = (x - width / 2) * (maxZ / 800);
+      p.y = (y - height / 2) * (maxZ / 800);
+      p.z = Math.random() * 200 + 400;
+      p.vx = (Math.random() - 0.5) * 5;
+      p.vy = (Math.random() - 0.5) * 5;
+      particles.push(p);
+      if (particles.length > 300) particles.shift();
+    }
+
+    function tick() {
+      if (isPointerDown) {
+        spawnParticleAt(pointerPos.x, pointerPos.y);
+        spawnParticleAt(pointerPos.x, pointerPos.y); // Double spawn
+      }
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        p.update();
+        p.draw();
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  // ─── CUSTOM CURSOR ─────────────────────────────────────────────────────────
+  function initCustomCursor() {
+    const cursor = document.getElementById("custom-cursor");
+    if (!cursor) return;
+
+    // Hide default cursor on fine pointer devices
+    if (window.matchMedia("(pointer: fine)").matches) {
+      document.body.style.cursor = "none";
+      gsap.set(cursor, { opacity: 1 });
+
+      window.addEventListener("mousemove", (e) => {
+        gsap.to(cursor, {
+          x: e.clientX,
+          y: e.clientY,
+          duration: 0.1,
+          ease: "power2.out",
+          overwrite: "auto",
+        });
+      });
+
+      const clickables = document.querySelectorAll("a, button, .step-dot-btn");
+      clickables.forEach((el) => {
+        el.addEventListener("mouseenter", () =>
+          gsap.to(cursor, { scale: 1.4, rotation: "+=45", duration: 0.2 }),
+        );
+        el.addEventListener("mouseleave", () =>
+          gsap.to(cursor, { scale: 1, rotation: "-=45", duration: 0.2 }),
+        );
+        (el as HTMLElement).style.cursor = "none";
+      });
+    }
+  }
+
+  // ─── STEP INDICATOR ────────────────────────────────────────────────────────
+  let currentActiveStep = 0;
+  let stepNavVisible = false;
+
+  function setStepNavVisible(vis: boolean) {
+    if (vis === stepNavVisible) return;
+    stepNavVisible = vis;
+    const nav = document.getElementById("step-nav");
+    if (nav) {
+      gsap.to(nav, {
+        opacity: vis ? 1 : 0,
+        duration: 0.3,
+        pointerEvents: vis ? "auto" : "none",
+      });
+    }
+  }
+
+  function updateStepDots(activeIndex: number) {
+    if (activeIndex === currentActiveStep) return;
+    currentActiveStep = activeIndex;
+
+    const dots = document.querySelectorAll(".step-dot");
+    const flowers = document.querySelectorAll(".step-flower");
+
+    dots.forEach((dot) => {
+      const parentBtn = dot.closest("button");
+      const label = parentBtn?.querySelector(".step-label");
+      if (parseInt((dot as HTMLElement).dataset.step || "0") === activeIndex) {
+        gsap.to(dot, { opacity: 0, scale: 0, duration: 0.2 });
+        if (label)
+          gsap.to(label, {
+            opacity: 1,
+            x: -5,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+      } else {
+        gsap.to(dot, {
+          opacity: 0.4,
+          scale: 1,
+          backgroundColor: "#05358f",
+          duration: 0.2,
+        });
+        if (label) gsap.to(label, { opacity: 0, x: 0, duration: 0.2 });
+      }
+    });
+
+    flowers.forEach((flower) => {
+      if (
+        parseInt((flower as HTMLElement).dataset.step || "0") === activeIndex
+      ) {
+        gsap.to(flower, {
+          opacity: 1,
+          scale: 1.2,
+          rotation: 360,
+          duration: 0.5,
+          ease: "back.out(1.5)",
+        });
+      } else {
+        gsap.to(flower, { opacity: 0, scale: 0, rotation: 0, duration: 0.3 });
+      }
+    });
+  }
+
+  function fadeNavLinks(hide: boolean) {
+    const fadeEl = document.getElementById("nav-links-fade");
+    if (fadeEl) {
+      gsap.to(fadeEl, {
+        opacity: hide ? 0 : 1,
+        y: hide ? -20 : 0,
+        duration: 0.3,
+        pointerEvents: hide ? "none" : "auto",
+        overwrite: "auto",
+      });
+    }
+  }
+
+  // Handle dot clicks
+  document.querySelectorAll(".step-dot-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const step = parseInt((btn as HTMLElement).dataset.step || "1");
+      const snapPoints = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+      const targetP = snapPoints[step];
+      const scrollY =
+        targetP *
+        (document.getElementById("hero-section")!.offsetHeight -
+          window.innerHeight);
+      gsap.to(window, {
+        scrollTo: scrollY,
+        duration: 1.2,
+        ease: "power3.inOut",
+      });
+    });
+  });
+
+  // ─── INIT THREE SCENE ──────────────────────────────────────────────────────
+  async function initScene(container: HTMLElement, modelUrl: string) {
     const scene = new THREE.Scene();
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(
-      container.clientWidth || window.innerWidth,
-      container.clientHeight || window.innerHeight,
-    );
+    renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
     const camera = new THREE.PerspectiveCamera(
       45,
-      (container.clientWidth || window.innerWidth) /
-        (container.clientHeight || window.innerHeight),
+      container.clientWidth / container.clientHeight,
       0.1,
       1000,
     );
-    camera.position.set(0, 1, 5);
+
+    // Initial zoom logic: 20% closer
+    const SCALE = 0.8;
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableRotate = false;
+    controls.enableZoom = false;
+    controls.enablePan = false;
     controls.enableDamping = true;
 
-    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    scene.add(new THREE.AmbientLight(0xffffff, 1.3));
+
+    const focusLight = new THREE.PointLight(0xffffff, 0, 50);
+    scene.add(focusLight);
+
     const dir = new THREE.DirectionalLight(0xffffff, 1.2);
     dir.position.set(5, 10, 7.5);
     scene.add(dir);
 
-    // [3D Fix] Load model and optimize for full-screen
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(modelUrl);
     const model = gltf.scene;
     scene.add(model);
 
-    // [3D Fix] Centrado y Ajuste de Cámara para visibilidad TOTAL
+    // Initial positioning
     const box = new THREE.Box3().setFromObject(model);
     const sphere = box.getBoundingSphere(new THREE.Sphere());
-    const center = sphere.center;
-    const size = box.getSize(new THREE.Vector3());
+    const IC = sphere.center.clone();
 
-    // Centrar el modelo
-    model.position.x = -center.x;
-    model.position.y = -center.y;
-    model.position.z = -center.z;
+    model.position.sub(IC);
 
-    // Escala base
-    const maxDim = Math.max(size.x, size.y, size.z);
-    model.scale.setScalar(1); // Reset scale to 1 for sphere calculation
-
-    // Calcular distancia de cámara para que quepa todo el modelo (Fit to Viewport)
+    // Fit camera
+    const maxDim = Math.max(
+      box.max.x - box.min.x,
+      box.max.y - box.min.y,
+      box.max.z - box.min.z,
+    );
     const fov = camera.fov * (Math.PI / 180);
-    let distance = Math.abs(sphere.radius / Math.sin(fov / 2));
+    let D = Math.abs(sphere.radius / Math.sin(fov / 2));
+    const aspect = container.clientWidth / container.clientHeight;
+    if (aspect < 1) D = D / aspect;
 
-    // Ajuste para pantallas verticales (Portrait)
-    const aspect =
-      (container.clientWidth || window.innerWidth) /
-      (container.clientHeight || window.innerHeight);
-    if (aspect < 1) {
-      distance = distance / aspect;
-    }
-
-    camera.position.set(0, 0, distance * 1.2); // 1.2 para un poco de margen (padding)
+    // Set strictly 20% closer initial view
+    const startPos = new THREE.Vector3(0, 0, D * 1.2 * SCALE);
+    camera.position.copy(startPos);
     camera.lookAt(0, 0, 0);
 
-    controls.target.set(0, 0, 0);
-    controls.update();
+    const NAMED = [
+      "Norte",
+      "Santander",
+      "Boyaca",
+      "Cundinamarca",
+      "Bogota",
+      "Caldas",
+      "Quindio",
+      "Tolima",
+      "Huila",
+      "Valle",
+    ];
+    const meshes: Record<string, THREE.Mesh> = {};
 
-    console.log("[3D Fix] Bounding Radius:", sphere.radius);
-    console.log("[3D Fix] Camera Distance:", distance);
+    const namedBaseColor = new THREE.Color(0xb8d4ea);
+    const mapBaseColor = new THREE.Color(0x9cc2d8);
+    const focusColor = new THREE.Color(0xffc107);
+    const visitedColor = new THREE.Color(0xff8800);
 
-    const clock = new THREE.Clock();
+    model.traverse((child) => {
+      const m = child as THREE.Mesh;
+      if (!m.isMesh) return;
+      const setColor = (mat: THREE.Material, color: THREE.Color) => {
+        const c = mat.clone() as THREE.MeshStandardMaterial;
+        if (c.color) c.color.set(color);
+        return c;
+      };
+      const isNamed = NAMED.includes(child.name);
+      if (Array.isArray(m.material)) {
+        m.material = m.material.map((mat: THREE.Material) =>
+          setColor(mat, isNamed ? namedBaseColor : mapBaseColor),
+        );
+      } else {
+        m.material = setColor(
+          m.material as THREE.Material,
+          isNamed ? namedBaseColor : mapBaseColor,
+        );
+      }
+      if (isNamed) meshes[child.name] = m;
+    });
+
+    const getCenter = (mesh: THREE.Mesh) =>
+      new THREE.Box3()
+        .setFromObject(mesh)
+        .getCenter(new THREE.Vector3())
+        .sub(IC);
+
+    const targets: Record<
+      string,
+      { center: THREE.Vector3; cam: THREE.Vector3 }
+    > = {};
+    const addTarget = (k: string, name: string, off: THREE.Vector3) => {
+      if (!meshes[name]) return;
+      const c = getCenter(meshes[name]);
+      targets[k] = { center: c, cam: c.clone().add(off) };
+    };
+
+    const camOff = (x: number, y: number, z: number) =>
+      new THREE.Vector3(D * x * SCALE, D * y * SCALE, D * z * SCALE);
+
+    addTarget("norte", "Norte", camOff(-0.2, -0.1, 0.28));
+    addTarget("santander", "Santander", camOff(0.15, 0.08, 0.28));
+    addTarget("boyaca", "Boyaca", camOff(-0.15, -0.08, 0.28));
+    addTarget("cundinamarca", "Cundinamarca", camOff(0.1, 0.12, 0.28));
+    addTarget("caldas", "Caldas", camOff(-0.1, -0.12, 0.28));
+    addTarget("tolima", "Tolima", camOff(-0.15, -0.08, 0.28));
+    addTarget("quindio", "Quindio", camOff(0.15, 0.08, 0.28));
+    addTarget("huila", "Huila", camOff(0.1, 0.12, 0.28));
+    addTarget("valle", "Valle", camOff(-0.1, -0.12, 0.28));
+
+    const visited = new Set<string>();
+
+    const hlMat = (
+      mat: THREE.Material,
+      color: THREE.Color,
+      tl: gsap.core.Timeline,
+      t: number,
+    ) => {
+      const m = mat as THREE.MeshStandardMaterial;
+      if (m.color)
+        tl.to(
+          m.color,
+          { r: color.r, g: color.g, b: color.b, duration: 0.4 },
+          t,
+        );
+    };
+
+    const hl = (
+      name: string,
+      color: THREE.Color,
+      tl: gsap.core.Timeline,
+      t: number,
+    ) => {
+      const mesh = meshes[name];
+      if (!mesh) return;
+      if (Array.isArray(mesh.material))
+        mesh.material.forEach((m: THREE.Material) => hlMat(m, color, tl, t));
+      else hlMat(mesh.material, color, tl, t);
+    };
+
+    const focusRegion = (
+      names: string[],
+      prevNames: string[],
+      tl: gsap.core.Timeline,
+      t: number,
+    ) => {
+      prevNames.forEach((n) => {
+        if (visited.has(n)) hl(n, visitedColor, tl, t);
+      });
+      names.forEach((n) => {
+        visited.add(n);
+        hl(n, focusColor, tl, t);
+      });
+    };
+
+    // ── Build scroll-driven timeline with explicit precision labels ────────────
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#hero-section",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true, // No delay/inertia for extremely predictable label snapping
+        snap: {
+          snapTo: "labels",
+          duration: { min: 0.15, max: 0.4 },
+          delay: 0, // Instant lock to region
+          ease: "power2.out",
+        },
+        onUpdate: (self: ScrollTrigger) => {
+          const p = self.progress;
+          if (p < 0.02 || p > 0.96) {
+            setStepNavVisible(false);
+            updateStepDots(0);
+            fadeNavLinks(false);
+          } else {
+            setStepNavVisible(true);
+            const stage = Math.min(9, Math.max(1, Math.round(p * 10)));
+            updateStepDots(stage);
+            if (p >= 0.02) fadeNavLinks(true);
+          }
+        },
+      },
+    });
+
+    const lookAt = { x: 0, y: 0, z: 0 };
+    const updateCam = () => {
+      camera.lookAt(lookAt.x, lookAt.y, lookAt.z);
+      controls.target.set(lookAt.x, lookAt.y, lookAt.z);
+    };
+
+    const moveCam = (key: string, t: number, dur = 0.8) => {
+      if (!targets[key]) return;
+      tl.to(
+        camera.position,
+        {
+          x: targets[key].cam.x,
+          y: targets[key].cam.y,
+          z: targets[key].cam.z,
+          duration: dur,
+          ease: "power2.inOut",
+        },
+        t,
+      );
+      tl.to(
+        lookAt,
+        {
+          x: targets[key].center.x,
+          y: targets[key].center.y,
+          z: targets[key].center.z,
+          onUpdate: updateCam,
+          duration: dur,
+          ease: "power2.inOut",
+        },
+        t,
+      );
+    };
+
+    const moveLight = (key: string, t: number, dur = 0.8) => {
+      if (!targets[key]) return;
+      const c = targets[key].center;
+      tl.to(
+        focusLight.position,
+        { x: c.x, y: c.y + 4, z: c.z + 5, duration: dur, ease: "power2.inOut" },
+        t,
+      );
+      tl.to(
+        focusLight,
+        { intensity: 2.5, duration: dur * 0.6, ease: "power2.inOut" },
+        t,
+      );
+    };
+
+    const showPanel = (id: string, t: number) =>
+      tl.to(id, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, t);
+    const hidePanel = (id: string, t: number, axis = "y") =>
+      tl.to(
+        id,
+        axis === "y"
+          ? { opacity: 0, y: -18, duration: 0.3, ease: "power2.in" }
+          : { opacity: 0, x: -18, duration: 0.3, ease: "power2.in" },
+        t,
+      );
+
+    // ── Timeline Events ──────────────────────────────────────────────────────
+
+    // Stage 0: Intro strictly resting
+    moveCam("norte", 0, 0.001);
+    moveLight("norte", 0, 0.001);
+    focusRegion(["Norte"], [], tl, 0);
+    tl.addLabel("stage0", 0);
+
+    // Stage 1: Norte resting
+    tl.to("#primary-info", { opacity: 0, y: -18, duration: 0.3 }, 0.1);
+    showPanel("#norte-info", 0.6);
+    tl.addLabel("stage1", 1.0);
+
+    // Stage 2: Santander resting
+    moveCam("santander", 1.1, 0.8);
+    moveLight("santander", 1.1, 0.8);
+    hidePanel("#norte-info", 1.1);
+    showPanel("#santander-info", 1.6);
+    focusRegion(["Santander"], ["Norte"], tl, 1.1);
+    tl.addLabel("stage2", 2.0);
+
+    // Stage 3: Boyacá resting
+    moveCam("boyaca", 2.1, 0.8);
+    moveLight("boyaca", 2.1, 0.8);
+    hidePanel("#santander-info", 2.1, "x");
+    showPanel("#boyaca-info", 2.6);
+    focusRegion(["Boyaca"], ["Santander"], tl, 2.1);
+    tl.addLabel("stage3", 3.0);
+
+    // Stage 4: Cundinamarca resting
+    moveCam("cundinamarca", 3.1, 0.8);
+    moveLight("cundinamarca", 3.1, 0.8);
+    hidePanel("#boyaca-info", 3.1);
+    showPanel("#cundinamarca-info", 3.6);
+    focusRegion(["Cundinamarca", "Bogota"], ["Boyaca"], tl, 3.1);
+    tl.addLabel("stage4", 4.0);
+
+    // Stage 5: Caldas resting
+    moveCam("caldas", 4.1, 0.8);
+    moveLight("caldas", 4.1, 0.8);
+    hidePanel("#cundinamarca-info", 4.1, "x");
+    showPanel("#caldas-info", 4.6);
+    focusRegion(["Caldas"], ["Cundinamarca", "Bogota"], tl, 4.1);
+    tl.addLabel("stage5", 5.0);
+
+    // Stage 6: Tolima resting
+    moveCam("tolima", 5.1, 0.8);
+    moveLight("tolima", 5.1, 0.8);
+    hidePanel("#caldas-info", 5.1);
+    showPanel("#tolima-info", 5.6);
+    focusRegion(["Tolima"], ["Caldas"], tl, 5.1);
+    tl.addLabel("stage6", 6.0);
+
+    // Stage 7: Quindío resting
+    moveCam("quindio", 6.1, 0.8);
+    moveLight("quindio", 6.1, 0.8);
+    hidePanel("#tolima-info", 6.1, "x");
+    showPanel("#quindio-info", 6.6);
+    focusRegion(["Quindio"], ["Tolima"], tl, 6.1);
+    tl.addLabel("stage7", 7.0);
+
+    // Stage 8: Huila resting
+    moveCam("huila", 7.1, 0.8);
+    moveLight("huila", 7.1, 0.8);
+    hidePanel("#quindio-info", 7.1);
+    showPanel("#huila-info", 7.6);
+    focusRegion(["Huila"], ["Quindio"], tl, 7.1);
+    tl.addLabel("stage8", 8.0);
+
+    // Stage 9: Valle resting
+    moveCam("valle", 8.1, 0.8);
+    moveLight("valle", 8.1, 0.8);
+    hidePanel("#huila-info", 8.1, "x");
+    showPanel("#valle-info", 8.6);
+    focusRegion(["Valle"], ["Huila"], tl, 8.1);
+    tl.addLabel("stage9", 9.0);
+
+    // Stage 10: Finale resting
+    const ALL = [
+      "Norte",
+      "Santander",
+      "Boyaca",
+      "Cundinamarca",
+      "Bogota",
+      "Caldas",
+      "Quindio",
+      "Tolima",
+      "Huila",
+      "Valle",
+    ];
+    ALL.forEach((n) => hl(n, visitedColor, tl, 9.1));
+
+    tl.to(
+      camera.position,
+      {
+        x: startPos.x,
+        y: startPos.y,
+        z: startPos.z,
+        duration: 0.8,
+        ease: "power2.inOut",
+      },
+      9.1,
+    );
+    tl.to(
+      lookAt,
+      {
+        x: 0,
+        y: 0,
+        z: 0,
+        onUpdate: updateCam,
+        duration: 0.8,
+        ease: "power2.inOut",
+      },
+      9.1,
+    );
+    tl.to(focusLight, { intensity: 0, duration: 0.5 }, 9.1);
+    hidePanel("#valle-info", 9.1, "x");
+    tl.to(
+      "#primary-info",
+      { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+      9.5,
+    );
+    tl.to(
+      "#hero-footer",
+      { opacity: 1, pointerEvents: "auto", duration: 0.4 },
+      9.5,
+    );
+
+    tl.addLabel("stage10", 10.0);
+
+    // Resize event & render loop
     function animate() {
       requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-
-      // Renderizar escena
+      controls.update();
       renderer.render(scene, camera);
     }
     animate();
 
-    function handleScroll() {
-      if (model) {
-        const scrollY = window.scrollY;
-        model.rotation.y = scrollY * 0.005;
-      }
-    }
-    window.addEventListener("scroll", handleScroll);
-
-    function handleResize() {
-      const w = container.clientWidth || window.innerWidth;
-      const h = container.clientHeight || window.innerHeight;
-      const aspect = w / h;
-
-      camera.aspect = aspect;
+    window.addEventListener("resize", () => {
+      camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
-
-      // Recalcular distancia óptima en resize
-      let newDistance = Math.abs(sphere.radius / Math.sin(fov / 2));
-      if (aspect < 1) {
-        newDistance = newDistance / aspect;
-      }
-      camera.position.z = newDistance * 1.2;
-
-      renderer.setSize(w, h);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    }
-    window.addEventListener("resize", handleResize);
-
-    return {
-      scene,
-      camera,
-      renderer,
-      dispose() {
-        window.removeEventListener("resize", handleResize);
-        try {
-          renderer.dispose();
-        } catch (e) {}
-        if (container.contains(renderer.domElement))
-          container.removeChild(renderer.domElement);
-      },
-    };
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    });
   }
+
+  // ─── INIT ──────────────────────────────────────────────────────────────────
+  initParticles();
+  initCustomCursor();
 
   (async () => {
     const container = document.getElementById("model-3d-container");
     if (!container) return;
-
-    // Improved path resolution for GLB
-    const baseUrl = document.querySelector("base")?.getAttribute("href") || "/";
-    const cleanBase = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
-    const modelPath = cleanBase + "models/mapa-colombia.glb";
-
-    console.log("[3D Fix] Intentando cargar modelo en:", modelPath);
-
+    const modelUrl = (BASE + "models/mapa-colombia.glb").replace("//", "/");
     try {
-      const scene = await initInline(container, modelPath);
-      window.threeScene = scene;
-      console.log("[Hero] modelo cargado en:", modelPath);
+      await initScene(container, modelUrl);
     } catch (err) {
-      console.error("[Hero] Error cargando GLB", err);
-      const e = document.createElement("div");
-      e.textContent = "3D error: " + (err.message || err);
-      e.style.cssText =
-        "position:fixed;left:8px;top:8px;background:#ffcdd2;color:#b71c1c;padding:8px;z-index:9999;";
-      container.appendChild(e);
+      console.error("[Hero]", err);
     }
   })();
 </script>
 
 <style>
   #model-3d-container {
-    position: absolute; /* Changed from fixed to absolute within relative section */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     pointer-events: auto;
   }
 </style>

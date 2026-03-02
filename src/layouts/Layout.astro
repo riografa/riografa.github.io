@@ -3,23 +3,47 @@ import "../styles/global.css";
 
 export interface Props {
   title?: string;
+  description?: string;
 }
 
-const { title = "Luisa Giraldo - Riográfa" } = Astro.props;
+const {
+  title = "Luisa Fernanda Giraldo Murillo — Riógrafa",
+  description = "Riógrafa y artista colombiana. Geocoreografías para las aguas, performance y artes vivas en los territorios de Colombia.",
+} = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Portafolio de Luisa Fernanda Giraldo Murillo" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={import.meta.env.BASE_URL + 'favicon.svg'} />
+    <meta name="description" content={description} />
+    <meta name="author" content="Luisa Fernanda Giraldo Murillo" />
+    <meta
+      name="keywords"
+      content="riógrafa, geocoreografías, artes vivas, performance, Colombia, agua, caléndula"
+    />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="es_CO" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href={import.meta.env.BASE_URL + "favicon-32x32.png"}
+    />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <base href={import.meta.env.BASE_URL}>
+    <base href={import.meta.env.BASE_URL} />
   </head>
-  <body>
+  <body
+    style="background-color: #f7f5f1; margin: 0; padding: 0; overflow-x: hidden;"
+  >
     <slot />
   </body>
 </html>
