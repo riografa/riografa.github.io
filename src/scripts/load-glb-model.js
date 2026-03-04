@@ -53,7 +53,7 @@ export async function initGLBScene(container, modelUrl) {
   // ============================================
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; // Suavizar movimientos
-  controls.dampingFactor = 0.05;
+  controls.dampingFactor = 0.15;
   controls.minDistance = 1;
   controls.maxDistance = 100;
   controls.maxPolarAngle = Math.PI / 2; // No pasar por debajo del suelo

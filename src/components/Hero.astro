@@ -93,17 +93,19 @@ const steps = [
 ---
 
 <section id="hero-section" class="relative w-full h-[1100vh] bg-transparent">
-  <div class="sticky top-0 w-screen h-[100dvh] overflow-hidden bg-[#f8f7f5]">
+  <div
+    class="sticky top-0 w-screen h-dvh overflow-hidden bg-gradient-to-r from-[#d6e5ee] from-10% via-[#cae3f2] via-30% to-[#d8e5eb] to-90%"
+  >
     <canvas
       id="particles-canvas"
-      class="absolute inset-0 z-0 pointer-events-none"></canvas>
-    <div id="model-3d-container" class="absolute inset-0 z-10 w-full h-full">
-    </div>
+      class="absolute inset-0 z-0 pointer-events-none">
+    </canvas>
+    <div id="model-3d-container" class="absolute inset-0 z-10 w-full h-full"></div>
 
     <!-- Step Navigation Indicator -->
     <nav
       id="step-nav"
-      class="fixed z-30 flex flex-col items-center gap-2 pointer-events-none"
+      class="fixed z-30 flex flex-col items-center gap-2 pointer-events-none opacity-0"
       style={`top:${GUTTER};right:${GUTTER};`}
       aria-label="Progreso de regiones"
     >
@@ -146,37 +148,36 @@ const steps = [
     <!-- Primary Info (Intro & Outro) -->
     <div
       id="primary-info"
-      class="fixed w-auto h-auto z-20 flex flex-col items-center lg:items-end gap-2 text-center lg:text-right py-4"
-      style={`right:${GUTTER};bottom:${GUTTER};padding-left:${GUTTER};padding-right:0;text-shadow: 0 0 10px rgba(248,247,245,0.9), 0 0 20px rgba(248,247,245,0.7);`}
+      class="fixed w-auto h-auto z-20 flex flex-col items-center lg:items-start gap-2 text-center lg:text-left py-4 bottom-8 left-8"
+      
     >
-      <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-        Luisa Fernanda Giraldo Murillo
+      <h1 class="flex flex-col gap-4 text-3xl lg:text-6xl font-black text-[#0b4a89]">
+        Luisa Fernanda <br /> Giraldo Murillo 
+        <span
+          class="text-[0.9rem] text-slate-800 font-semibold w-full lg:w-[480px] leading-0 font-secondary"
+        >
+          Magíster en Teatro y Artes Vivas · Doctoranda en Arte y Arquitectura
+        </span>
       </h1>
-      <p
-        class="text-sm text-slate-800 font-semibold w-full lg:w-[480px] leading-relaxed"
-      >
-        Riógrafa. Geocoreografías para las aguas.<br />
-        Magíster en Teatro y Artes Vivas · Doctoranda en Arte y Arquitectura — UNAL
-      </p>
     </div>
 
     <!-- Footer for Final View -->
     <div
       id="hero-footer"
-      class="fixed w-full bottom-0 left-0 z-20 flex flex-col items-center justify-center py-6 pointer-events-none opacity-0"
+      class="fixed w-full bottom-8 right-8 z-20 flex flex-col items-center lg:items-end justify-center py-6 pointer-events-none opacity-0"
     >
       <p
-        class="text-xs text-slate-600 font-semibold uppercase tracking-widest text-shadow-sm"
+        class="text-xs text-slate-600 font-semibold uppercase tracking-widest "
       >
         Diseñado y desarrollado por <a
           href="https://keishmer00.github.io/"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-slate-800 border-b border-slate-400 hover:text-amber-500 hover:border-amber-500 transition-colors pointer-events-auto"
-          >Keishmer Pérez</a
-        >
+          class="text-slate-800 border-b border-slate-400 hover:text-amber-500 hover:border-amber-500 transition-colors pointer-events-auto text-decoration-none underline-offset-4"
+          >Keishmer Pérez</a>
+
       </p>
-      <p class="text-[10px] text-slate-500 mt-1">
+      <p class="text-[0.8rem] text-slate-500 mt-1">
         © {new Date().getFullYear()} 2026 - Todos los derechos reservados.
       </p>
     </div>
@@ -225,8 +226,8 @@ const steps = [
     };
 
     const particles: any[] = [];
-    const count = 146; // 30% more
-    const maxZ = 1500;
+    const count = 150; // 30% more
+    const maxZ = 1000;
 
     class Particle {
       x = (Math.random() - 0.5) * width * 3;
@@ -458,18 +459,17 @@ const steps = [
   async function initScene(container: HTMLElement, modelUrl: string) {
     const scene = new THREE.Scene();
 
+    // FIX: fallback a window cuando el container aún mide 0px
+    const W = container.clientWidth || window.innerWidth;
+    const H = container.clientHeight || window.innerHeight;
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000,
-    );
+    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
 
     // Initial zoom logic: 20% closer
     const SCALE = 0.8;
@@ -509,7 +509,7 @@ const steps = [
     );
     const fov = camera.fov * (Math.PI / 180);
     let D = Math.abs(sphere.radius / Math.sin(fov / 2));
-    const aspect = container.clientWidth / container.clientHeight;
+    const aspect = W / H;
     if (aspect < 1) D = D / aspect;
 
     // Set strictly 20% closer initial view
@@ -531,9 +531,9 @@ const steps = [
     ];
     const meshes: Record<string, THREE.Mesh> = {};
 
-    const namedBaseColor = new THREE.Color(0xb8d4ea);
-    const mapBaseColor = new THREE.Color(0x9cc2d8);
-    const focusColor = new THREE.Color(0xffc107);
+    const namedBaseColor = new THREE.Color(0x90d6ff);
+    const mapBaseColor = new THREE.Color(0x1a6490);
+    const focusColor = new THREE.Color(0x1cb9f7);
     const visitedColor = new THREE.Color(0xff8800);
 
     model.traverse((child) => {
@@ -577,7 +577,7 @@ const steps = [
     const camOff = (x: number, y: number, z: number) =>
       new THREE.Vector3(D * x * SCALE, D * y * SCALE, D * z * SCALE);
 
-    addTarget("norte", "Norte", camOff(-0.2, -0.1, 0.28));
+    addTarget("norte", "Norte", camOff(0.1, 0.1, 0.3));
     addTarget("santander", "Santander", camOff(0.15, 0.08, 0.28));
     addTarget("boyaca", "Boyaca", camOff(-0.15, -0.08, 0.28));
     addTarget("cundinamarca", "Cundinamarca", camOff(0.1, 0.12, 0.28));
@@ -638,12 +638,16 @@ const steps = [
         trigger: "#hero-section",
         start: "top top",
         end: "bottom bottom",
-        scrub: true, // No delay/inertia for extremely predictable label snapping
+
+        // más suave (catch-up)
+        scrub: 0.7, // prueba 0.5–1.0
+
         snap: {
-          snapTo: "labels",
-          duration: { min: 0.15, max: 0.4 },
-          delay: 0, // Instant lock to region
+          snapTo: "labelsDirectional",
+          duration: { min: 0.25, max: 0.8 },
+          delay: 0.12,
           ease: "power2.out",
+          inertia: false,
         },
         onUpdate: (self: ScrollTrigger) => {
           const p = self.progress;
@@ -723,7 +727,7 @@ const steps = [
     // ── Timeline Events ──────────────────────────────────────────────────────
 
     // Stage 0: Intro strictly resting
-    moveCam("norte", 0, 0.001);
+    moveCam("norte", 0.5, 0.5);
     moveLight("norte", 0, 0.001);
     focusRegion(["Norte"], [], tl, 0);
     tl.addLabel("stage0", 0);
@@ -818,7 +822,7 @@ const steps = [
         x: startPos.x,
         y: startPos.y,
         z: startPos.z,
-        duration: 0.8,
+        duration: 0.5,
         ease: "power2.inOut",
       },
       9.1,
@@ -830,7 +834,7 @@ const steps = [
         y: 0,
         z: 0,
         onUpdate: updateCam,
-        duration: 0.8,
+        duration: 0.5,
         ease: "power2.inOut",
       },
       9.1,
@@ -859,9 +863,11 @@ const steps = [
     animate();
 
     window.addEventListener("resize", () => {
-      camera.aspect = container.clientWidth / container.clientHeight;
+      const rW = container.clientWidth || window.innerWidth;
+      const rH = container.clientHeight || window.innerHeight;
+      camera.aspect = rW / rH;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(rW, rH);
     });
   }
 

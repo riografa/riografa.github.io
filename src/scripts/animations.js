@@ -5,6 +5,7 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
+
 gsap.from('#navbar', {
     y: -100,
     duration: 1,
